@@ -1,0 +1,21 @@
+{
+    "name": "curso-vue-componentes",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "lite-server",
+        "css-build": "node-sass scss -o css",
+        "css-watch": "npm run css-build -- -w",
+        "start": "npm run css-watch"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "bulma": "^0.9.3"
+    },
+    "devDependencies": {
+        "lite-server": "^2.6.1"
+    }
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Plantilla de Componentes</title>
+        <link rel="stylesheet" href="../css/style.css" />
+        <!-- Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <!-- Axios js -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <main id="app" class="section">
+            <!-- TODO: Documentación: https://vuejs.org/v2/guide/components-custom-events.html -->
+            <v-pizza
+                v-for="(pizza, index) in pizzas"
+                :name="pizza.name"
+                :image="pizza.image"
+                :amount="pizza.amount"
+                :total-pizzas="totalPizzas"
+                :key="index"
+                @add-amount="totalPizzas++"
+                @sub-amount="totalPizzas > 0 && totalPizzas--"
+            ></v-pizza>
+        </main>
+        <!-- ! Plantilla componente -->
+        <script type="text/x-template" id="pizza-template">
+            <article class="card">
+                <div class="card-image">
+                    <figure>
+                        <img :src="image" alt="Pizza" />
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="block">
+                        <h4 class="is-title is-4">{{ name }}</h4>
+                    </div>
+                    <button @click="addPizza" class="button">+</button>
+                    <span class="tag is-medium">{{ totalPizzas }}</span>
+                    <button @click="subsPizza" class="button">-</button>
+                </div>
+            </article>
+        </script>
+        <script>
+            const VPizza = {
+                props: {
+                    image: String,
+                    amount: Number,
+                    name: String,
+                    totalPizzas: Number,
+                },
+                template: "#pizza-template",
+                methods: {
+                    addPizza() {
+                        /*
+                         * Emitir un evento hacía el componente padre
+                         */
+                        this.$emit("add-amount");
+                    },
+                    /*
+                     * Emitir un evento hacía el componente padre
+                     */
+                    subsPizza() {
+                        this.$emit("sub-amount");
+                    },
+                },
+            };
+            new Vue({
+                el: "#app",
+                data: {
+                    totalPizzas: 0,
+                    pizzas: [
+                        {
+                            name: "Pizza de carne",
+                            image: "https://cocina-casera.com/wp-content/uploads/2011/12/pizaa-carne-receta.jpg",
+                            amount: 0,
+                        },
+                        {
+                            name: "Mini Pizza",
+                            image: "https://i.ytimg.com/vi/4wg09Xms_wo/sddefault.jpg",
+                            amount: 0,
+                        },
+                        {
+                            name: "Pizza Pepperoni",
+                            image: "https://i.ytimg.com/vi/4wg09Xms_wo/sddefault.jpg",
+                            amount: 0,
+                        },
+                    ],
+                },
+                components: {
+                    VPizza,
+                },
+            });
+            Vue.config.devtools = true;
+        </script>
+    </body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Componentes globales y locales</title>
+        <link rel="stylesheet" href="../css/style.css" />
+        <!-- Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <!-- Axios js -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <main id="app" class="section">
+            <!-- ! -->
+            <!-- ! -->
+            <!-- TODO: Documentación: https://vuejs.org/v2/guide/components-registration.html#Local-Registration -->
+            <!-- ! -->
+            <!-- ! -->
+            <div class="buttons">
+                <v-button
+                    v-for="(button, index) in buttons"
+                    v-bind:link="button.link"
+                    :class-modifier="button.classModifier"
+                    :anchor-text="button.anchorText"
+                    :key="index"
+                />
+            </div>
+        </main>
+        <script>
+            /*
+                ! Componente global
+            */
+            // Vue.component("v-button", {
+            //     props: {
+            //         anchorText: String,
+            //         link: {
+            //             type: String,
+            //             default: "http://vuejs.org",
+            //         },
+            //         classModifier: {
+            //             type: String,
+            //             default: "is-info",
+            //         },
+            //     },
+            //     template: `
+            //         <a class="button" :class="classModifier" :href="link" target="_blank">{{ anchorText }}</a>
+            //     `,
+            // });
+            /*
+                ! Componentes locales
+            */
+            const VTextButton = {
+                template: `
+                    <span>Texto botón</span>
+                `,
+            };
+            const VButton = {
+                data() {
+                    return {
+                        openOtherTab: "_blank",
+                    };
+                },
+                props: {
+                    anchorText: String,
+                    link: {
+                        type: String,
+                        default: "http://vuejs.org",
+                    },
+                    classModifier: {
+                        type: String,
+                        default: "is-info",
+                    },
+                    target: {
+                        type: String,
+                        required: false,
+                    },
+                },
+                // template: `
+                //     <a class="button" :class="classModifier" :href="link" target="_blank">{{ anchorText }}</a>
+                // `,
+                components: {
+                    VTextButton,
+                },
+                template: `
+                    <a class="button" :class="classModifier" :href="link" :target="target"><v-text-button></v-text-button></a>
+                `,
+            };
+            new Vue({
+                el: "#app",
+                data: {
+                    buttons: [
+                        {
+                            link: "http://wmedia.es",
+                            anchorText: "Wmedia",
+                            classModifier: "is-danger",
+                        },
+                        {
+                            link: "http://escuelavue.es",
+                            anchorText: "Escuela Vue",
+                            classModifier: "is-warning",
+                        },
+                        {
+                            link: "http://vuejs.org",
+                            anchorText: "Vue.js",
+                            classModifier: "is-primary",
+                        },
+                    ],
+                },
+                components: {
+                    VButton,
+                    VTextButton,
+                },
+            });
+            Vue.config.devtools = true;
+        </script>
+    </body>
+</html>
