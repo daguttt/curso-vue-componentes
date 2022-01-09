@@ -11,12 +11,218 @@
         <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
     <body>
-        <main class="section" id="app"></main>
-        <script type="text/x-template" id="user-template"></script>
+        <main class="section" id="app">
+            <section class="columns is-mobile">
+                <!-- Column Available Users -->
+                <article class="column">
+                    <h2 class="title is-2">
+                        Usuarios disponibles
+                        <span class="subtitle is-3">
+                            {{ availableUsers.length }}
+                        </span>
+                    </h2>
+                    <!-- Available Users  -->
+                    <v-wrapper-cards
+                        :users-list="availableUsers"
+                        :move-to="usersSelected"
+                    ></v-wrapper-cards>
+                    <!-- <v-wrapper-cards
+                        :users-list="{name: getPropName($data, availableUsers), data: availableUsers}"
+                        :move-to="{name: getPropName($data, usersSelected), data: usersSelected}"
+                    ></v-wrapper-cards> -->
+                </article>
+                <!-- Column Users Selected -->
+                <div class="column">
+                    <h2 class="title is-2">
+                        Usuarios seleccionados
+                        <span class="subtitle is-3">
+                            {{ usersSelected.length }}
+                        </span>
+                    </h2>
+                    <!-- Users Selected -->
+                    <v-wrapper-cards
+                        :users-list="usersSelected"
+                        :move-to="availableUsers"
+                    ></v-wrapper-cards>
+                    <!-- <v-wrapper-cards
+                        :users-list="{name: getPropName($data, usersSelected), data: usersSelected}"
+                        :move-to="{name: getPropName($data, availableUsers), data: availableUsers}"
+                    ></v-wrapper-cards> -->
+                </div>
+            </section>
+            <pre>{{ $data }}</pre>
+        </main>
+        <!-- User Card Template -->
+        <script type="text/x-template" id="card-user-template">
+            <article class="card" @click="handleUserSelected">
+                <div class="card-image">
+                    <img :src="info.picture.large" :alt="info.name">
+                </div>
+                <div class="card-content">
+                    <div class="block">
+                        <h3 class="title is-3">{{ nameCompleted }}</h3>
+                    </div>
+                    <div class="content">
+                        <a :href="info.email">{{ info.email }}</a>
+                        <p>{{ info.username }}</p>
+                    </div>
+                </div>
+            </article>
+        </script>
+        <!-- Wrapper User Card Template -->
+        <script type="text/x-template" id="wrapper-card-user-template">
+            <div>
+                <v-card-user
+                    @user-selected="changeUserState"
+                    v-for="(user, index) in usersList"
+                    :info="user"
+                    :key="index"
+                ></v-card-user>
+                <!-- <v-card-user
+                    v-for="(user, index) in usersList.data"
+                    @user-selected="changeUserState"
+                    :info="user"
+                    :key="index"
+                ></v-card-user> -->
+            </div>
+        </script>
+        <!-- SCRIPTS -->
         <script>
-            new Vue({
+            // *****************************************************
+            // Get object's property name as an String
+            // *****************************************************
+            function getPropName(obj, keyTarget) {
+                for (let key in obj) {
+                    if (obj[key] === keyTarget) return key;
+                }
+                return false;
+            }
+            // *****************************************************
+            // User Card Component
+            // *****************************************************
+            const VCardUser = {
+                props: ["info"],
+                template: "#card-user-template",
+                computed: {
+                    nameCompleted() {
+                        // TODO: Terminar esta linea
+                        return `${this.info.name.title}: ${this.info.name.first} ${this.info.name.last}`;
+                    },
+                },
+                methods: {
+                    handleUserSelected() {
+                        /**
+                         * Send
+                         */
+                        // ! Send username as an "Id" value to find the user faster
+                        this.$emit("user-selected", this.info.username);
+                    },
+                },
+            };
+            // *****************************************************
+            // Wrapper Users Cards Component
+            // *****************************************************
+            const VWrapperCards = {
+                props: {
+                    usersList: Array,
+                    // usersList: Object,
+                    moveTo: Array,
+                    // moveTo: Object,
+                },
+                template: "#wrapper-card-user-template",
+                components: {
+                    VCardUser,
+                },
+                methods: {
+                    changeUserState(usernameTarget) {
+                        const indexUsernameTarget = this.usersList.findIndex(
+                            (user) => {
+                                return user.username == usernameTarget;
+                            }
+                        );
+                        // const indexUsernameTarget =
+                        //     this.usersList.data.findIndex((user) => {
+                        //         return user.username == usernameTarget;
+                        //     });
+                        if (indexUsernameTarget > -1) {
+                            /*
+                             *********************************************************
+                             * Las propiedades que recibe un componente, que hacen parte del modelo
+                             * de un componente o instancia padre, pueden ser modificadas desde el componente local
+                             * afectando directamente el modelo de la instancia padre.
+                             *
+                             * Esto se evidencia usando el metodo .splice a 'usersList' y .unshift a 'moveTo', propiedades que
+                             * en un principio viene del modelo de la instacia vue raiz (VM).
+                             *********************************************************
+                             */
+                            /*
+                                *********************************************************
+                                ! En principio no estoy seguro de que sea una buena práctica. Así que hay una
+                                ! opción **comentada** que programé como una alternativa para resolver este problema
+                                ! usando una Propiedad de la instancia (this.$root)
+                            */
+                            /*
+                                Propiedades de la Instancia Vue.
+                                TODO: Documentacion: https://vuejs.org/v2/api/#Instance-Properties
+                                *********************************************************
+                            */
+                            // Get User Target
+                            const userToBeMoved = this.usersList.splice(
+                                indexUsernameTarget,
+                                1
+                            )[0];
+                            // const userToBeMoved = this.$root[
+                            //     this.usersList.name
+                            // ].splice(indexUsernameTarget, 1)[0];
+                            // Add User Target to Model Root Instance's usersSelected array
+                            this.moveTo.unshift(userToBeMoved);
+                            // this.$root[this.moveTo.name].unshift(userToBeMoved);
+                        }
+                    },
+                },
+            };
+            // *****************************************************
+            // Vue Root Instance
+            // *****************************************************
+            const VM = new Vue({
                 el: "#app",
-                data: {},
+                created() {
+                    axios
+                        .get("https://randomuser.me/api/?results=50")
+                        .then((res) => {
+                            this.availableUsers = res.data.results.map(
+                                (user) => {
+                                    return {
+                                        username: user.login.username,
+                                        name: user.name,
+                                        email: user.email,
+                                        picture: user.picture,
+                                    };
+                                }
+                            );
+                        })
+                        .catch((err) => {
+                            console.error(err);
+                        });
+                },
+                data: {
+                    availableUsers: [],
+                    usersSelected: [],
+                },
+                components: {
+                    VWrapperCards,
+                },
+                // methods: {
+                //     // *****************************************************
+                //     // Get object's property name as an String
+                //     // *****************************************************
+                //     getPropName(obj, keyTarget) {
+                //         for (let key in obj) {
+                //             if (obj[key] === keyTarget) return key;
+                //         }
+                //         return undefined;
+                //     },
+                // },
             });
             Vue.config.devtools = true;
         </script>
