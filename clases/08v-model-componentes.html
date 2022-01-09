@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Usar v-model en Componentes</title>
+        <link rel="stylesheet" href="../css/style.css" />
+        <!-- Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <!-- Axios js -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <main id="app" class="section">
+            <form>
+                <div class="field">
+                    <label for="name" class="label">Nombre</label>
+                    <div class="control">
+                        <!-- * v-model es un azucar sintáctico para el Data Binding Bidireccional -->
+                        <!-- Tras bambalinas Vue utiliza v-bind y v-on -->
+                        <input type="text" class="input" v-model="search" />
+                        <!-- <input
+                            type="text"
+                            class="input"
+                            :value="search"
+                            @input="search = $event.target.value"
+                        /> -->
+                    </div>
+                    <v-custom-input v-model="search"> Nombre </v-custom-input>
+                </div>
+            </form>
+        </main>
+        <!-- + *********************************************************************************** -->
+        <!-- Custom Input Template -->
+        <script type="text/x-template" id="custom-input-template">
+            <!--
+                * En componentes es necesario recrear manualmente la logica para poder usuar v-model.
+                Se hace emitiendo un evento con el mismo nombre del evento que verifica v-model (evento 'input')
+                TODO: Documentación: https://vuejs.org/v2/guide/components.html#Using-v-model-on-Components
+            -->
+            <div class="field">
+                <label for="name" class="label">
+                    <slot></slot>
+                </label>
+                <div class="control">
+                    <input
+                        type="text"
+                        class="input"
+                        :value="value"
+                        @input="$emit('input', $event.target.value)"
+                    />
+                </div>
+            </div>
+        </script>
+        <!-- SCRIPTS and VUE INSTANCE -->
+        <script>
+            Vue.component("v-custom-input", {
+                props: {
+                    value: String,
+                },
+                template: "#custom-input-template",
+            });
+            new Vue({
+                el: "#app",
+                data: {
+                    search: "",
+                },
+            });
+        </script>
+    </body>
+</html>
