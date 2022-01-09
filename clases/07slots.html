@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Slots en Componentes</title>
+        <link rel="stylesheet" href="../css/style.css" />
+        <!-- Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <!-- Axios js -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <main id="app" class="section">
+            <!-- ! -->
+            <!-- ! -->
+            <!-- * Existen más formas de trabajar con los slots. Consulta la documentación -->
+            <!-- TODO: Documentación: https://v3.vuejs.org/guide/component-slots.html#named-slots -->
+            <!-- ! -->
+            <!-- ! -->
+            <v-base-layout>
+                <template v-slot:header>
+                    <h1 class="title is-1">Hello World!</h1>
+                </template>
+                <template v-slot:default>
+                    <ul>
+                        <li>List item 1</li>
+                        <li>List item 2</li>
+                        <li>List item 3</li>
+                    </ul>
+                </template>
+                <template v-slot:footer>
+                    <p>Copyright dagut_x</p>
+                </template>
+            </v-base-layout>
+        </main>
+        <script type="text/x-template" id="base-template">
+            <section class="content">
+                <header>
+                    <slot name="header"></slot>
+                </header>
+                <main>
+                    <slot></slot>
+                </main>
+                <footer>
+                    <slot name="footer"></slot>
+                </footer>
+            </section>
+        </script>
+        <!-- SCRIPTS and VUE INSTANCE -->
+        <script>
+            const VBaseLayout = {
+                template: "#base-template",
+            };
+            new Vue({
+                el: "#app",
+                data: {},
+                components: {
+                    VBaseLayout,
+                },
+            });
+        </script>
+    </body>
+</html>
