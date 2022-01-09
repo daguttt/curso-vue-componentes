@@ -20,8 +20,8 @@
                 :amount="pizza.amount"
                 :total-pizzas="totalPizzas"
                 :key="index"
-                @add-amount="totalPizzas++"
-                @sub-amount="totalPizzas > 0 && totalPizzas--"
+                @add-amount="addPizza"
+                @sub-amount="subPizza"
             ></v-pizza>
         </main>
         <!-- ! Plantilla componente -->
@@ -37,12 +37,13 @@
                         <h4 class="is-title is-4">{{ name }}</h4>
                     </div>
                     <button @click="addPizza" class="button">+</button>
-                    <span class="tag is-medium">{{ totalPizzas }}</span>
-                    <button @click="subsPizza" class="button">-</button>
+                    <span class="tag is-medium">{{ amount }}</span>
+                    <button @click="subPizza" class="button">-</button>
                 </div>
             </article>
         </script>
         <script>
+            // Pizza Component
             const VPizza = {
                 props: {
                     image: String,
@@ -56,13 +57,13 @@
                         /*
                          * Emitir un evento hacía el componente padre
                          */
-                        this.$emit("add-amount");
+                        this.$emit("add-amount", this.name);
                     },
                     /*
                      * Emitir un evento hacía el componente padre
                      */
-                    subsPizza() {
-                        this.$emit("sub-amount");
+                    subPizza() {
+                        this.$emit("sub-amount", this.name);
                     },
                 },
             };
@@ -87,6 +88,20 @@
                             amount: 0,
                         },
                     ],
+                },
+                methods: {
+                    addPizza(pizzaName) {
+                        const element = this.pizzas.filter(
+                            (pizza) => pizza.name == pizzaName
+                        )[0];
+                        element.amount++;
+                    },
+                    subPizza(pizzaName) {
+                        const element = this.pizzas.filter(
+                            (pizza) => pizza.name == pizzaName
+                        )[0];
+                        element.amount > 0 && element.amount--;
+                    },
                 },
                 components: {
                     VPizza,
