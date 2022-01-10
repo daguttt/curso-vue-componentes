@@ -12,15 +12,17 @@
     </head>
     <body>
         <main id="app" class="section">
-            <div class="buttons">
-                <button
-                    class="button"
-                    v-for="tab in tabs"
-                    :key="tab"
-                    @click="currentTab = tab"
-                >
-                    {{ toCapitalize(tab) }}
-                </button>
+            <div class="tabs is-centered">
+                <ul>
+                    <li
+                        v-for="tab in tabs"
+                        :key="tab"
+                        @click="handleTabSelected(tab)"
+                        :class="{ 'is-active': currentTab === tab }"
+                    >
+                        <a>{{ toCapitalize(tab) }}</a>
+                    </li>
+                </ul>
             </div>
             <component :is="selectedTabComponent" :tasks="tasks"></component>
         </main>
@@ -102,6 +104,9 @@
                     },
                 },
                 methods: {
+                    handleTabSelected(tab) {
+                        this.currentTab = tab;
+                    },
                     toCapitalize(value) {
                         return (
                             value.charAt(0).toUpperCase() +
