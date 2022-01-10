@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Usar v-model en Componentes</title>
+        <link rel="stylesheet" href="../css/style.css" />
+        <!-- Vue.js -->
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+        <!-- Axios js -->
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    </head>
+    <body>
+        <main id="app" class="section">
+            <div class="buttons">
+                <button
+                    class="button"
+                    v-for="tab in tabs"
+                    :key="tab"
+                    @click="currentTab = tab"
+                >
+                    {{ toCapitalize(tab) }}
+                </button>
+            </div>
+            <component :is="selectedTabComponent" :tasks="tasks"></component>
+        </main>
+        <!-- + *********************************************************************************** -->
+        <!-- Custom Input Template -->
+        <script type="text/x-template" id="tasks-template">
+            <section class="column">
+                <slot></slot>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Estado</th>
+                            <th>Tarea</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="task in tasks">
+                            <td v-if="task.isCompleted">
+                                <input type="checkbox" checked />
+                            </td>
+                            <td v-else>
+                                <input type="checkbox" />
+                            </td>
+                            <td>{{ task.title }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </script>
+        <!-- SCRIPTS and VUE INSTANCE -->
+        <script>
+            Vue.component("tab-tasks", {
+                props: {
+                    tasks: Array,
+                },
+                template: "#tasks-template",
+            });
+            Vue.component("tab-posts", {
+                template: `
+                    <h1 class="title is-1">Tab Posts</h1>
+                `,
+            });
+            new Vue({
+                el: "#app",
+                data: {
+                    currentTab: "tasks",
+                    tabs: ["tasks", "posts"],
+                    tasks: [
+                        {
+                            title: "Preparar la serie de Nuxt",
+                            priority: 6,
+                            isCompleted: false,
+                        },
+                        {
+                            title: "Producir la serie de Vue-cli",
+                            priority: 7,
+                            isCompleted: false,
+                        },
+                        {
+                            title: "Finalizar la serie de Componentes",
+                            priority: 8,
+                            isCompleted: false,
+                        },
+                        {
+                            title: "Desarrollar la nueva Web de Escuela Vue",
+                            priority: 9,
+                            isCompleted: false,
+                        },
+                        {
+                            title: "Finalizar la serie Vue Esencial",
+                            priority: 7,
+                            isCompleted: true,
+                        },
+                    ],
+                },
+                computed: {
+                    selectedTabComponent() {
+                        return `tab-${this.currentTab}`;
+                    },
+                },
+                methods: {
+                    toCapitalize(value) {
+                        return (
+                            value.charAt(0).toUpperCase() +
+                            value.slice(1).toLowerCase()
+                        );
+                    },
+                },
+            });
+        </script>
+    </body>
+</html>
